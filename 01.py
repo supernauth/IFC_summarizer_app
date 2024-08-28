@@ -8,11 +8,6 @@ ifc_file = ifcopenshell.open(ifc_name)
 # Get all types defined in the schema
 schema_types = ifc_file.schema
 
-"""
-# List all types
-for type_name in schema_types:
-    print(type_name)
-"""
 
 # Collect types with instances in the file
 # ! This is where the types of structures can be seen
