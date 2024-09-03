@@ -32,3 +32,11 @@ for entity in ifc_file:
 # Print the filtered types
 for type_name in sorted(types_with_instances):
     print(type_name)
+
+
+desired_types = [
+    "IfcBeam",
+    "IfcColumn",
+    "IfcSlab",
+    "IfcWall",
+]
