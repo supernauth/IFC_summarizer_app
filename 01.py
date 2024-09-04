@@ -51,21 +51,33 @@ desired_quantities = [
     "Volume",
 ]
 
+# To store results
+results = []
 
-# Function to extract and print the quantities
+
+# Function to extract and store the quantities
 def extract_quantities(element):
+    element_data = {"ID": element.GlobalId, "Type": element.is_a()}
+
     # Iterate through the defined properties of the element
     for definition in element.IsDefinedBy:
         if hasattr(definition, "RelatingPropertyDefinition"):
-            quantities = definition.RelatingPropertyDefinition.HasQuantities
-            # Check each quantity
-            for quantity in quantities:
-                quantity_name = quantity.Name
-                if quantity_name in desired_quantities:
-                    # Print or store the desired quantities
-                    print(
-                        f"Element ID: {element.GlobalId}, Type: {element.is_a()}, {quantity_name}: {quantity.NominalValue}"
-                    )
+            relating_def = definition.RelatingPropertyDefinition
+            # Check if the relating property is an IfcElementQuantity
+            if relating_def.is_a("IfcElementQuantity"):
+                quantities = relating_def.HasQuantities
+                # Check each quantity
+                for quantity in quantities:
+                    quantity_name = quantity.Name
+                    if quantity_name in desired_quantities:
+                        # Store the quantity in the element data
+                        element_data[quantity_name] = quantity.NominalValue
+            # If it's an IfcPropertySet, skip it for quantity extraction
+            elif relating_def.is_a("IfcPropertySet"):
+                continue
+
+    # Append the element data to the results list
+    results.append(element_data)
 
 
 # Iterate through the IFC file elements and filter by the desired types
@@ -73,3 +85,11 @@ for ifc_type in desired_types:
     elements = ifc_file.by_type(ifc_type)
     for element in elements:
         extract_quantities(element)
+
+# Print out the results
+for result in results:
+    print(f"Element ID: {result['ID']}, Type: {result['Type']}")
+    for quantity in desired_quantities:
+        if quantity in result:
+            print(f"  {quantity}: {result[quantity]}")
+    print()  # Add a blank line for better readability
