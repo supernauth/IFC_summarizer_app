@@ -64,20 +64,13 @@ def extract_quantities(element):
     for definition in element.IsDefinedBy:
         if hasattr(definition, "RelatingPropertyDefinition"):
             relating_def = definition.RelatingPropertyDefinition
-            # Check if the relating property is an IfcElementQuantity
             if relating_def.is_a("IfcElementQuantity"):
                 quantities = relating_def.HasQuantities
-                # Check each quantity
                 for quantity in quantities:
                     quantity_name = quantity.Name
                     if quantity_name in desired_quantities:
-                        # Store the quantity in the element data
                         element_data[quantity_name] = quantity.NominalValue
-            # If it's an IfcPropertySet, skip it for quantity extraction
-            elif relating_def.is_a("IfcPropertySet"):
-                continue
 
-    # Append the element data to the results list
     results.append(element_data)
 
 
