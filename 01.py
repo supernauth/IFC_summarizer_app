@@ -1,4 +1,5 @@
 import ifcopenshell
+import openpyxl
 
 ifc_name = "phoenix_statika.ifc"
 
@@ -93,3 +94,25 @@ for result in results:
         if quantity in result:
             print(f"  {quantity}: {result[quantity]}")
     print()  # Add a blank line for better readability
+
+
+# Create an Excel workbook and add a worksheet
+wb = openpyxl.Workbook()
+ws = wb.active
+ws.title = "IFC Quantities"
+
+# Write headers to the Excel file
+headers = ["Element ID", "Type"] + desired_quantities
+ws.append(headers)
+
+# Write data rows to the Excel file
+for result in results:
+    row = [result.get("ID"), result.get("Type")]
+    for quantity in desired_quantities:
+        row.append(result.get(quantity))
+    ws.append(row)
+
+# Save the Excel file
+output_file = "ifc_quantities.xlsx"
+wb.save(output_file)
+print(f"Data successfully written to {output_file}")
